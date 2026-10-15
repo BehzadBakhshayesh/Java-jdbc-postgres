@@ -6,6 +6,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        DatabaseConnection databaseConnection = new DatabaseConnection();
+        databaseConnection.getConnection("jdbc:postgresql://localhost:5000/postgres", "postgres", "Behzad123");
         Library library = new Library(new JsonStorage("library.json"));
         try {
             library.load();
