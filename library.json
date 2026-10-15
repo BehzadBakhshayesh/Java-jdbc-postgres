@@ -1,0 +1,33 @@
+{
+  "books": [
+    {
+      "id": 1,
+      "title": "js",
+      "author": "sad",
+      "year": 354,
+      "isAvailable": true
+    },
+    {
+      "id": 2,
+      "title": "بهزاد",
+      "author": "شسیب",
+      "year": 574,
+      "isAvailable": true
+    },
+    {
+      "id": 3,
+      "title": "A|B",
+      "author": "SFDD",
+      "year": 654,
+      "isAvailable": true
+    }
+  ],
+  "members": [
+    {
+      "id": 1,
+      "name": "behzad",
+      "email": "behzad@gmail.com",
+      "borrowedBookIds": []
+    }
+  ]
+}
