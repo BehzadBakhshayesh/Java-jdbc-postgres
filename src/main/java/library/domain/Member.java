@@ -1,4 +1,8 @@
-package library;
+package library.domain;
+
+import library.IdGenerator;
+import library.LibraryException;
+import library.MemberData;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;

@@ -1,13 +1,15 @@
 package library;
 
+import library.domain.Book;
+import library.domain.Member;
+
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        DatabaseConnection databaseConnection = new DatabaseConnection();
-        databaseConnection.getConnection("jdbc:postgresql://localhost:5000/postgres", "postgres", "Behzad123");
+
         Library library = new Library(new JsonStorage("library.json"));
         try {
             library.load();
@@ -93,7 +95,7 @@ public class Main {
                 case 4:
                     try {
                         System.out.print("Enter Book ID: ");
-                        int bookId = input.nextInt();
+                        long bookId = input.nextLong();
                         input.nextLine();
                         System.out.print("Edit your book name: ");
                         String selectedTitle = input.nextLine();
@@ -115,7 +117,7 @@ public class Main {
                 case 5:
                     try {
                         System.out.print("Enter book ID: ");
-                        int bookId = input.nextInt();
+                        long bookId = input.nextLong();
                         input.nextLine();
                         library.deleteBook(bookId);
                         System.out.println("Book deleted successfully!");
@@ -166,7 +168,7 @@ public class Main {
                 case 9:
                     try {
                         System.out.print("Enter Member ID: ");
-                        int editMemberId = input.nextInt();
+                        long editMemberId = input.nextLong();
                         input.nextLine();
                         System.out.print("Edit your Member name: ");
                         String editMemberName = input.nextLine();
@@ -185,7 +187,7 @@ public class Main {
                 case 10:
                     try {
                         System.out.print("Enter Member id: ");
-                        int removeMemberId = input.nextInt();
+                        long removeMemberId = input.nextLong();
                         input.nextLine();
                         library.deleteMember(removeMemberId);
                         System.out.println("Member deleted successfully!");
@@ -200,10 +202,10 @@ public class Main {
                 case 11:
                     try {
                         System.out.print("Enter Book ID: ");
-                        int bookId = input.nextInt();
+                        long bookId = input.nextLong();
                         input.nextLine();
                         System.out.print("Enter Member id: ");
-                        int memberId = input.nextInt();
+                        long memberId = input.nextLong();
                         input.nextLine();
                         library.borrowBook(bookId, memberId);
                         System.out.println("Book borrowed successfully!");
@@ -218,10 +220,10 @@ public class Main {
                 case 12:
                     try {
                         System.out.print("Enter Book ID: ");
-                        int bookId = input.nextInt();
+                        long bookId = input.nextLong();
                         input.nextLine();
                         System.out.print("Enter Member id: ");
-                        int memberId = input.nextInt();
+                        long memberId = input.nextLong();
                         input.nextLine();
                         library.returnBook(bookId, memberId);
                         System.out.println("Book returned successfully!");

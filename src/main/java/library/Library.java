@@ -1,6 +1,9 @@
 package library;
 
 
+import library.domain.Book;
+import library.domain.Member;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;

@@ -9,9 +9,9 @@ public class ConnectionTest {
         DatabaseConnection db = new DatabaseConnection();
         try {
             Connection connection = db.getConnection(
-                    "jdbc:postgresql://localhost:5000/postgres",
+                    "jdbc:postgresql://localhost:5000/library_db",
                     "postgres",
-                    System.getenv("Behzad123")
+                    "Behzad123"
             );
 
             if (connection != null && !connection.isClosed()) {

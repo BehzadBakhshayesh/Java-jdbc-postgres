@@ -1,4 +1,8 @@
-package library;
+package library.domain;
+
+import library.BookData;
+import library.IdGenerator;
+import library.LibraryException;
 
 import java.time.Year;
 
