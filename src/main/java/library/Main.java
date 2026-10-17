@@ -2,6 +2,11 @@ package library;
 
 import library.domain.Book;
 import library.domain.Member;
+import library.exceptions.LibraryException;
+import library.services.BookServices;
+import library.services.LibraryServices;
+import library.services.MemberServices;
+import library.utils.JsonStorage;
 
 import java.util.ArrayList;
 import java.util.InputMismatchException;
@@ -10,9 +15,11 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
 
-        Library library = new Library(new JsonStorage("library.json"));
+        LibraryServices libraryServices = new LibraryServices(new JsonStorage("library.json"));
+        BookServices bookServices= new BookServices();
+        MemberServices  memberServices= new MemberServices();
         try {
-            library.load();
+            libraryServices.load();
         } catch (LibraryException e) {
             System.out.println("Could not load data: " + e.getMessage());
             System.out.println("Exiting without saving to protect your files.");
@@ -59,7 +66,7 @@ public class Main {
                         System.out.print("Write your book year: ");
                         int year = input.nextInt();
                         input.nextLine();
-                        library.addBook(title, author, year);
+                        bookServices.addBook(title, author, year);
                         System.out.println("Book added successfully!");
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid year! Please enter a number.");
@@ -69,19 +76,19 @@ public class Main {
                     }
                     break;
                 case 2:
-                    ArrayList<Book> showList = library.showBooks();
-                    if (showList.isEmpty()) {
+                    ArrayList<Book> allBooks = bookServices.allBooks();
+                    if (allBooks.isEmpty()) {
                         System.out.println("Book not found!");
                         break;
                     }
-                    for (Book i : showList) {
+                    for (Book i : allBooks) {
                         System.out.println(i.toString());
                     }
                     break;
                 case 3:
                     System.out.print("Search Book: ");
                     String search = input.nextLine();
-                    var searchList = library.searchBook(search);
+                    var searchList = bookServices.searchBook(search);
 
                     if (searchList.isEmpty()) {
                         System.out.println("Book not found!");
@@ -104,7 +111,7 @@ public class Main {
                         System.out.print("Edit your book year: ");
                         int selectedYear = input.nextInt();
                         input.nextLine();
-                        Book edited = library.editBook(bookId, selectedTitle, selectedAuthor, selectedYear);
+                        Book edited = bookServices.editBook(bookId, selectedTitle, selectedAuthor, selectedYear);
                         System.out.println(edited);
                         System.out.println("Book edited successfully!");
                     } catch (InputMismatchException e) {
@@ -119,7 +126,7 @@ public class Main {
                         System.out.print("Enter book ID: ");
                         long bookId = input.nextLong();
                         input.nextLine();
-                        library.deleteBook(bookId);
+                        bookServices.deleteBook(bookId);
                         System.out.println("Book deleted successfully!");
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid book number! Please enter a number.");
@@ -135,14 +142,14 @@ public class Main {
                         String name = input.nextLine();
                         System.out.print("Enter email: ");
                         String email = input.nextLine();
-                        library.addMember(name, email);
+                        memberServices.addMember(name, email);
                         System.out.println("Member added successfully!");
                     } catch (LibraryException e) {
                         System.out.println(e.getMessage());
                     }
                     break;
                 case 7:
-                    ArrayList<Member> membersList = library.showMembers();
+                    ArrayList<Member> membersList = memberServices.allMembers();
                     if (membersList.isEmpty()) {
                         System.out.println("Member not found!");
                         break;
@@ -154,7 +161,7 @@ public class Main {
                 case 8:
                     System.out.print("Search Member: ");
                     String searchMember = input.nextLine();
-                    var searchMemberList = library.searchMember(searchMember);
+                    var searchMemberList = memberServices.searchMember(searchMember);
 
                     if (searchMemberList.isEmpty()) {
                         System.out.println("Member not found!");
@@ -174,7 +181,7 @@ public class Main {
                         String editMemberName = input.nextLine();
                         System.out.print("Edit your Member Email: ");
                         String editMemberEmail = input.nextLine();
-                        library.editMember(editMemberId, editMemberName, editMemberEmail);
+                        memberServices.editMember(editMemberId, editMemberName, editMemberEmail);
                         System.out.println("Member edited successfully!");
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid input! Please enter a number.");
@@ -189,7 +196,7 @@ public class Main {
                         System.out.print("Enter Member id: ");
                         long removeMemberId = input.nextLong();
                         input.nextLine();
-                        library.deleteMember(removeMemberId);
+                        memberServices.deleteMember(removeMemberId);
                         System.out.println("Member deleted successfully!");
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid ID! Please enter a number.");
@@ -207,7 +214,7 @@ public class Main {
                         System.out.print("Enter Member id: ");
                         long memberId = input.nextLong();
                         input.nextLine();
-                        library.borrowBook(bookId, memberId);
+                        libraryServices.borrowBook(bookId, memberId);
                         System.out.println("Book borrowed successfully!");
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid input! Please enter a number.");
@@ -225,7 +232,7 @@ public class Main {
                         System.out.print("Enter Member id: ");
                         long memberId = input.nextLong();
                         input.nextLine();
-                        library.returnBook(bookId, memberId);
+                        libraryServices.returnBook(bookId, memberId);
                         System.out.println("Book returned successfully!");
                     } catch (InputMismatchException e) {
                         System.out.println("Invalid input! Please enter a number.");
@@ -237,7 +244,7 @@ public class Main {
                     break;
                 case 13:
                     try {
-                        library.save();
+                        libraryServices.save();
                     } catch (LibraryException e) {
                         System.out.println("Could not save data: " + e.getMessage());
                         System.out.println("Fix the problem and choose Exit again.");

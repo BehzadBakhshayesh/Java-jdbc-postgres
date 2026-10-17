@@ -1,6 +1,6 @@
 package library.repository;
 
-import library.LibraryException;
+import library.exceptions.LibraryException;
 import library.domain.Book;
 
 import java.sql.*;
