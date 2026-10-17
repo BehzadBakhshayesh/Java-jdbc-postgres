@@ -1,6 +1,6 @@
 package library.test;
 
-import library.db.DatabaseConnection;
+import library.config.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.SQLException;

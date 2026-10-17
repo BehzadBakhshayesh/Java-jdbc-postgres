@@ -7,6 +7,12 @@ import java.util.ArrayList;
 public class MemberServices {
     private ArrayList<Member> members = new ArrayList<>();
 
+    private static final MemberServices instance = new MemberServices();
+    private MemberServices() {}
+    public static MemberServices getInstance() {
+        return instance;
+    }
+
     public void addMember(String name, String email) {
         Member member = new Member(name, email);
         this.members.add(member);

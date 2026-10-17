@@ -8,6 +8,13 @@ public class BookServices {
 
     private ArrayList<Book> books = new ArrayList<>();
 
+    private static final BookServices instance = new BookServices();
+    private BookServices() {}
+    public static BookServices getInstance() {
+        return instance;
+    }
+
+
     public void addBook(String title, String author, int year) {
         Book newBook = new Book(title, author, year);
         this.books.add(newBook);

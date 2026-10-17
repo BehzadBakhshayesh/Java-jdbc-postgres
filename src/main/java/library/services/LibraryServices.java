@@ -14,9 +14,8 @@ import java.util.stream.Collectors;
 
 public class LibraryServices {
     private final LibraryStorage storage;
-    BookServices bookServices = new BookServices();
-    MemberServices memberServices = new MemberServices();
-
+    BookServices bookServices=  BookServices.getInstance();
+    MemberServices  memberServices=  MemberServices.getInstance();
     public LibraryServices(LibraryStorage storage) {
         this.storage = storage;
     }
