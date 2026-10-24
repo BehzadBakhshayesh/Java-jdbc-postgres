@@ -14,7 +14,6 @@ public class BookServices {
         return instance;
     }
 
-
     public void addBook(String title, String author, int year) {
         Book newBook = new Book(title, author, year);
         this.books.add(newBook);

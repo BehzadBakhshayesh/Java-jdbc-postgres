@@ -29,7 +29,6 @@ public class BookRepository {
             if (affectedRows == 0) {
                 throw new LibraryException("Creating book failed, no rows affected.");
             }
-
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     long generatedId = generatedKeys.getLong(1);
