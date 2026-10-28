@@ -1,30 +1,37 @@
 package library;
 
+import library.config.DatabaseConnection;
 import library.domain.Book;
 import library.domain.Member;
 import library.exceptions.LibraryException;
+import library.repository.BookRepository;
+import library.repository.LibraryRepository;
+import library.repository.MemberRepository;
 import library.services.BookServices;
 import library.services.LibraryServices;
 import library.services.MemberServices;
-import library.utils.JsonStorage;
-
-import java.util.ArrayList;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        DatabaseConnection db = new DatabaseConnection();
+        try (Connection connection = db.getConnection("jdbc:postgresql://localhost:5000/library_db", "postgres", "Behzad123")) {
 
-        LibraryServices libraryServices = new LibraryServices(new JsonStorage("library.json"));
-        BookServices bookServices=  BookServices.getInstance();
-        MemberServices  memberServices=  MemberServices.getInstance();
-        try {
-            libraryServices.load();
-        } catch (LibraryException e) {
-            System.out.println("Could not load data: " + e.getMessage());
-            System.out.println("Exiting without saving to protect your files.");
-            return;
+            BookServices bookServices = new BookServices(new BookRepository(connection));
+            MemberServices memberServices = new MemberServices(new MemberRepository(connection));
+            LibraryServices libraryServices = new LibraryServices(new LibraryRepository(connection));
+
+            runMenu(bookServices, memberServices, libraryServices);
+        } catch (RuntimeException | SQLException e) {
+            System.out.println("Could not connect to the database: " + e.getMessage());
         }
+    }
+
+    private static void runMenu(BookServices bookServices, MemberServices memberServices,LibraryServices libraryServices) {
         Scanner input = new Scanner(System.in);
         System.out.println("===== Library System =====");
         String[] choices = {
@@ -76,7 +83,7 @@ public class Main {
                     }
                     break;
                 case 2:
-                    ArrayList<Book> allBooks = bookServices.allBooks();
+                    List<Book> allBooks = bookServices.allBooks();
                     if (allBooks.isEmpty()) {
                         System.out.println("Book not found!");
                         break;
@@ -149,7 +156,7 @@ public class Main {
                     }
                     break;
                 case 7:
-                    ArrayList<Member> membersList = memberServices.allMembers();
+                    List<Member> membersList = memberServices.allMembers();
                     if (membersList.isEmpty()) {
                         System.out.println("Member not found!");
                         break;
@@ -244,7 +251,6 @@ public class Main {
                     break;
                 case 13:
                     try {
-                        libraryServices.save();
                     } catch (LibraryException e) {
                         System.out.println("Could not save data: " + e.getMessage());
                         System.out.println("Fix the problem and choose Exit again.");
@@ -258,4 +264,5 @@ public class Main {
             }
         }
     }
+
 }

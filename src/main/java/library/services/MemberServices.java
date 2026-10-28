@@ -1,68 +1,50 @@
 package library.services;
 
-import library.exceptions.LibraryException;
+import library.domain.Book;
 import library.domain.Member;
-import java.util.ArrayList;
+import library.exceptions.LibraryException;
+import library.repository.MemberRepository;
+
+import java.util.List;
 
 public class MemberServices {
-    private ArrayList<Member> members = new ArrayList<>();
-
-    private static final MemberServices instance = new MemberServices();
-    private MemberServices() {}
-    public static MemberServices getInstance() {
-        return instance;
-    }
-
-    public void addMember(String name, String email) {
-        Member member = new Member(name, email);
-        this.members.add(member);
-    }
-
-    public ArrayList<Member> allMembers() {
-        return new ArrayList<>(this.members);
-    }
-
-    public ArrayList<Member> searchMember(String search) {
-        ArrayList<Member> searchList = new ArrayList<>();
-        String searchText = search.toLowerCase();
-        for (int i = 0; i < this.members.size(); i++) {
-            if (this.members.get(i).getName().toLowerCase().contains(searchText) || this.members.get(i).getEmail().toLowerCase().contains(searchText)) {
-                searchList.add(this.members.get(i));
-            }
+    private final MemberRepository memberRepository;
+    private Member withBorrowedBooks(Member member) {
+        for (Book book : memberRepository.findBorrowedBooks(member.getId())) {
+            member.addBorrowedBooks(book);
         }
-        return searchList;
+        return member;
+    }
+
+    public MemberServices(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
+
+    public Member addMember(String name, String email) {
+        return memberRepository.insert(new Member(name, email));
+    }
+
+    public List<Member> allMembers() {
+        return memberRepository.findAll();
+    }
+
+    public List<Member> searchMember(String text) {
+        return memberRepository.search(text);
     }
 
     public Member findMemberById(long id) {
-        for (Member member : members) {
-            if (member.getId() == id) {
-                return member;
-            }
-        }
-        return null;
+        return memberRepository.findById(id)
+                .orElseThrow(() -> new LibraryException("Member not found!"));
     }
 
-    public void editMember(long id, String name, String email) {
-        Member foundMember = this.findMemberById(id);
-        if (foundMember == null) {
-            throw new LibraryException("Member not found!");
-        }
+    public Member editMember(long id, String name, String email) {
         Member.validateParams(name, email);
-        foundMember.setName(name);
-        foundMember.setEmail(email);
+        findMemberById(id);
+        return memberRepository.update(id, new Member(id, name, email));
     }
 
     public void deleteMember(long id) {
-        Member foundMember = this.findMemberById(id);
-        if (foundMember == null) {
-            throw new LibraryException("Member not found!");
-        }
-        if (!foundMember.borrowedBooks().isEmpty()) {
-            throw new LibraryException("The member has borrowed a book!");
-        }
-        this.members.remove(foundMember);
+        memberRepository.delete(id);
     }
-    public void  clearMembers (){
-        members.clear();
-    }
+
 }

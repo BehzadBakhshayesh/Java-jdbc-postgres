@@ -1,7 +1,7 @@
 package library.domain;
 
-import library.utils.IdGenerator;
 import library.exceptions.LibraryException;
+import library.utils.IdGenerator;
 import library.utils.MemberData;
 
 import java.util.ArrayList;

@@ -2,13 +2,11 @@ package library.test;
 
 import library.config.DatabaseConnection;
 import library.domain.Book;
+import library.exceptions.LibraryException;
 import library.repository.BookRepository;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
 
 public class BookRepositoryTest {
 
@@ -24,31 +22,34 @@ public class BookRepositoryTest {
                 "postgres",
                 "Behzad123"
         )) {
-            BookRepository bookRepository = new BookRepository(connection);
+            BookRepository repo = new BookRepository(connection);
 
-            // 1. insert
-            Book saved = bookRepository.insert(new Book("Clean Code1", "Robert Martin", 2007));
-            Book saved2 = bookRepository.insert(new Book("Clean Code2", "Robert Martin", 2008));
-            Book saved3 = bookRepository.insert(new Book("Clean Code3", "Robert Martin", 2009));
-            System.out.println("Inserted: " + saved);
-            // 2. findById
-            Optional<Book> findById = bookRepository.findById(1);
-            System.out.println("findById:" + findById);
-            // 3. searchByTitle("clean")
-            List<Book> searchByTitle = bookRepository.searchByTitle("clean");
-            System.out.println("searchByTitle:" + searchByTitle);
-            // 4. update
-            Book update = bookRepository.update(1, new Book("java", "Behzad", 2020));
-            System.out.println("update:" + update);
-            // 5. updateAvailability(false)
-            bookRepository.updateAvailability(1, false);
-            Optional<Book> findById2 = bookRepository.findById(1);
-            System.out.println("findById:" + findById2);
-            // 6. delete
-            bookRepository.delete(1);
-            // 7. findById بعد از delete باید Optional.empty باشد
-            Optional<Book> findById3 = bookRepository.findById(1);
-            System.out.println("findById:" + findById3);
+            Book b1 = repo.insert(new Book("Clean Code1", "Robert Martin", 2007));
+            Book b2 = repo.insert(new Book("Clean Code2", "Robert Martin", 2008));
+            System.out.println("Inserted: " + b1);
+            System.out.println("Inserted: " + b2);
+
+            System.out.println("findById: " + repo.findById(b1.getId()));
+            System.out.println("search: " + repo.searchByTitle("clean"));
+
+            Book updated = repo.update(b1.getId(), new Book("Java", "Behzad", 2020));
+            System.out.println("update: " + updated);
+
+            repo.updateAvailability(b1.getId(), false);
+            System.out.println("after availability: " + repo.findById(b1.getId()));
+
+            System.out.println("findAll: " + repo.findAll());
+
+            repo.delete(b1.getId());
+            repo.delete(b2.getId());
+            System.out.println("after delete: " + repo.findById(b1.getId()));
+
+            try {
+                repo.delete(b1.getId());
+                System.out.println("ERROR: expected exception");
+            } catch (LibraryException e) {
+                System.out.println("Expected error: " + e.getMessage());
+            }
         } catch (RuntimeException | SQLException e) {
             System.out.println("Test failed: " + e.getMessage());
         }
