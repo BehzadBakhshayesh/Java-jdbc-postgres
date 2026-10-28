@@ -25,16 +25,17 @@ public class MemberServices {
     }
 
     public List<Member> allMembers() {
-        return memberRepository.findAll();
+        return memberRepository.findAll().stream().map(this::withBorrowedBooks).toList();
     }
 
     public List<Member> searchMember(String text) {
-        return memberRepository.search(text);
+        return memberRepository.search(text).stream().map(this::withBorrowedBooks).toList();
     }
 
     public Member findMemberById(long id) {
-        return memberRepository.findById(id)
+        Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new LibraryException("Member not found!"));
+        return withBorrowedBooks(member);
     }
 
     public Member editMember(long id, String name, String email) {

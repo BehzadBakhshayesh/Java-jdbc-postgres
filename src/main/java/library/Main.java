@@ -250,12 +250,6 @@ public class Main {
                     }
                     break;
                 case 13:
-                    try {
-                    } catch (LibraryException e) {
-                        System.out.println("Could not save data: " + e.getMessage());
-                        System.out.println("Fix the problem and choose Exit again.");
-                        break;
-                    }
                     System.out.println("Goodbye!");
                     input.close();
                     return;

@@ -1,7 +1,6 @@
 package library.domain;
 
 import library.exceptions.LibraryException;
-import library.utils.IdGenerator;
 import library.utils.MemberData;
 
 import java.util.ArrayList;
@@ -15,10 +14,7 @@ public class Member {
     private String email;
 
     public Member(String name, String email) {
-        validateParams(name, email);
-        this.id = IdGenerator.generateMemberId();
-        this.name = name;
-        this.email = email;
+        this(0, name, email);
     }
 
     public Member(long id, String name, String email) {

@@ -2,7 +2,6 @@ package library.domain;
 
 import library.utils.BookData;
 import library.exceptions.LibraryException;
-import library.utils.IdGenerator;
 
 import java.time.Year;
 
@@ -14,12 +13,7 @@ public class Book {
     private boolean isAvailable;
 
     public Book(String title, String author, int year) {
-        validateParams(title, author, year);
-        this.id = IdGenerator.generateBookId();
-        this.title = title;
-        this.author = author;
-        this.year = year;
-        this.isAvailable = true;
+        this(0, title, author, year, true);
     }
 
     public Book(long id, String title, String author, int year, boolean isAvailable) {

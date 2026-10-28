@@ -26,6 +26,13 @@ public class BookRepository {
         );
     }
 
+    private LibraryException toLibraryException(SQLException e) {
+        if ("23503".equals(e.getSQLState())) {
+            return new LibraryException("Cannot delete a member with borrowing history!");
+        }
+        return new LibraryException("Database error: " + e.getMessage());
+    }
+
     public Book insert(Book book) {
         String sql = "INSERT INTO books (title, author, year, is_available) VALUES (?, ?, ?, ?)";
         try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -133,14 +140,14 @@ public class BookRepository {
     }
 
     public void delete(long id) {
-        String sql = "DELETE FROM books WHERE id = ?";
+        String sql = "DELETE FROM members WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setLong(1, id);
             if (pstmt.executeUpdate() == 0) {
-                throw new LibraryException("Book not found with id: " + id);
+                throw new LibraryException("Member not found with id: " + id);
             }
         } catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
+            throw toLibraryException(e);
         }
     }
 
