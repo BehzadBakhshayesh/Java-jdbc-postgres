@@ -85,15 +85,6 @@ public class Member {
         return borrowedBooks.contains(book);
     }
 
-    public MemberData toData() {
-        List<Long> ids = this.borrowedBooks.stream().map(book -> book.getId()).collect(Collectors.toList());
-        return new MemberData(this.id, this.name, this.email, ids);
-    }
-
-    public static Member fromData(MemberData d) {
-        // Borrowed books are linked later by Library.load()
-        return new Member(d.getId(), d.getName(), d.getEmail());
-    }
 
     @Override
     public String toString() {

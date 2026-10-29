@@ -88,14 +88,6 @@ public class Book {
         validateYear(year);
     }
 
-    public BookData toData(){
-        return  new BookData(this.id,this.title,this.author,this.year,this.isAvailable);
-    }
-
-    public static Book fromData(BookData d){
-        return new Book(d.getId(), d.getTitle(), d.getAuthor(), d.getYear(), d.isAvailable());
-    }
-
     @Override
     public String toString() {
         return "ID : " + this.id + " | Title: " + this.title + " | Author: " + this.author + " | Year: " + this.year + " | Status: " + (this.isAvailable ? "Available" : "Borrowed");
