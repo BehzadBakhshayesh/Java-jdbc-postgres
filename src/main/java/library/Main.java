@@ -16,7 +16,7 @@ public class Main {
 
         DatabaseConnection db = new DatabaseConnection();
 
-        try (Connection connection = db.getConnection("jdbc:postgresql://localhost:5000/library_db", "postgres", "Behzad1234")) {
+        try (Connection connection = db.getConnection("jdbc:postgresql://localhost:5000/library_db", "postgres", "Behzad123")) {
 
             BookServices bookServices = new BookServices(new BookRepository(connection));
             MemberServices memberServices = new MemberServices(new MemberRepository(connection));
