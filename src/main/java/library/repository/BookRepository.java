@@ -70,9 +70,10 @@ public class BookRepository {
         List<Book> books = new ArrayList<>();
         String sql =SELECT_COLUMNS + " ORDER BY id";
 
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
+        try (
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)
+        ) {
             while (rs.next()) {
                 Book book = mapRow(rs);
                 books.add(book);
@@ -118,7 +119,9 @@ public class BookRepository {
 
     public Book update(long id, Book book) {
         String sql = "UPDATE books SET title = ?, author = ?, year = ? WHERE id = ?";
+
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setString(1, book.getTitle());
             pstmt.setString(2, book.getAuthor());
             pstmt.setInt(3, book.getYear());
@@ -134,11 +137,15 @@ public class BookRepository {
 
     public void delete(long id) {
         String sql = "DELETE FROM books WHERE id = ?";
+
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setLong(1, id);
+
             if (pstmt.executeUpdate() == 0) {
                 throw new LibraryException("Book not found with id: " + id);
             }
+
         } catch (SQLException e) {
             if ("23503".equals(e.getSQLState())) {
                 throw new LibraryException("Cannot delete a book with borrowing history!");

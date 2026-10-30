@@ -35,7 +35,9 @@ public class MemberRepository {
 
     public Member insert(Member member) {
         String sql = "INSERT INTO members (name, email) VALUES (?, ?)";
+
         try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             pstmt.setString(1, member.getName());
             pstmt.setString(2, member.getEmail());
 
@@ -55,12 +57,18 @@ public class MemberRepository {
 
     public List<Member> findAll() {
         List<Member> members = new ArrayList<>();
+
         String sql = SELECT_COLUMNS + " ORDER BY id";
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+
+        try (
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)
+        ) {
+
             while (rs.next()) {
                 members.add(mapRow(rs));
             }
+
         } catch (SQLException e) {
             throw toLibraryException(e);
         }
@@ -84,11 +92,15 @@ public class MemberRepository {
 
     public List<Member> search(String text) {
         String sql = SELECT_COLUMNS + " WHERE name ILIKE ? OR email ILIKE ? ORDER BY id";
+
         List<Member> result = new ArrayList<>();
+
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             String pattern = "%" + text + "%";
             pstmt.setString(1, pattern);
             pstmt.setString(2, pattern);
+
             try (ResultSet rs = pstmt.executeQuery()) {
                 while (rs.next()) {
                     result.add(mapRow(rs));
@@ -102,7 +114,9 @@ public class MemberRepository {
 
     public Member update(long id, Member member) {
         String sql = "UPDATE members SET name = ?, email = ? WHERE id = ?";
+
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setString(1, member.getName());
             pstmt.setString(2, member.getEmail());
             pstmt.setLong(3, id);
@@ -110,18 +124,22 @@ public class MemberRepository {
             if (pstmt.executeUpdate() == 0) {
                 throw new LibraryException("Member not found with id: " + id);
             }
+
             return new Member(id, member.getName(), member.getEmail());
+
         } catch (SQLException e) {
             throw toLibraryException(e);
         }
     }
 
 
-
     public void delete(long id) {
         String sql = "DELETE FROM members WHERE id = ?";
+
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+
             pstmt.setLong(1, id);
+
             if (pstmt.executeUpdate() == 0) {
                 throw new LibraryException("Member not found with id: " + id);
             }
@@ -132,12 +150,12 @@ public class MemberRepository {
 
     public List<Book> findBorrowedBooks(long memberId) {
         String sql = """
-            SELECT b.id, b.title, b.author, b.year, b.is_available
-            FROM books b
-            JOIN borrowings br ON br.book_id = b.id
-            WHERE br.member_id = ? AND br.returned_at IS NULL
-            ORDER BY b.id
-            """;
+                SELECT b.id, b.title, b.author, b.year, b.is_available
+                FROM books b
+                JOIN borrowings br ON br.book_id = b.id
+                WHERE br.member_id = ? AND br.returned_at IS NULL
+                ORDER BY b.id
+                """;
         List<Book> result = new ArrayList<>();
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setLong(1, memberId);
@@ -157,17 +175,23 @@ public class MemberRepository {
         }
         return result;
     }
+
     public Map<Long, List<Book>> findBorrowedBooksByMember() {
         String sql = """
-            SELECT br.member_id, b.id, b.title, b.author, b.year, b.is_available
-            FROM books b
-            JOIN borrowings br ON br.book_id = b.id
-            WHERE br.returned_at IS NULL
-            ORDER BY b.id
-            """;
+                SELECT br.member_id, b.id, b.title, b.author, b.year, b.is_available
+                FROM books b
+                JOIN borrowings br ON br.book_id = b.id
+                WHERE br.returned_at IS NULL
+                ORDER BY b.id
+                """;
+
         Map<Long, List<Book>> result = new HashMap<>();
-        try (Statement stmt = connection.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+
+        try (
+                Statement stmt = connection.createStatement();
+                ResultSet rs = stmt.executeQuery(sql)
+        ) {
+
             while (rs.next()) {
                 long memberId = rs.getLong("member_id");
                 Book book = new Book(

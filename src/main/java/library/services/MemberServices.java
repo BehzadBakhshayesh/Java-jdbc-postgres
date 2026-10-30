@@ -49,7 +49,6 @@ public class MemberServices {
 
     public Member editMember(long id, String name, String email) {
         Member.validateParams(name, email);
-        findMemberById(id);
         return memberRepository.update(id, new Member(id, name, email));
     }
 
