@@ -28,7 +28,7 @@ public class BookRepository {
 
     private LibraryException toLibraryException(SQLException e) {
         if ("23503".equals(e.getSQLState())) {
-            return new LibraryException("Cannot delete a member with borrowing history!");
+            return new LibraryException("Cannot delete a book with borrowing history!");
         }
         return new LibraryException("Database error: " + e.getMessage());
     }
@@ -140,11 +140,11 @@ public class BookRepository {
     }
 
     public void delete(long id) {
-        String sql = "DELETE FROM members WHERE id = ?";
+        String sql = "DELETE FROM books WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setLong(1, id);
             if (pstmt.executeUpdate() == 0) {
-                throw new LibraryException("Member not found with id: " + id);
+                throw new LibraryException("Book not found with id: " + id);
             }
         } catch (SQLException e) {
             throw toLibraryException(e);
