@@ -1,6 +1,8 @@
 package library.repository;
 
 import library.exceptions.LibraryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,9 +10,15 @@ import java.sql.SQLException;
 
 public class LibraryRepository {
     private final Connection connection;
+    private static final Logger log = LoggerFactory.getLogger(LibraryRepository.class);
 
     public LibraryRepository(Connection connection) {
         this.connection = connection;
+    }
+
+    private LibraryException toLibraryException(SQLException e) {
+        log.error("Unexpected database error (SQLState={})", e.getSQLState(), e);
+        return new LibraryException("Database error: " + e.getMessage(), e);
     }
 
     public void borrowBook(long bookId, long memberId) {
@@ -42,25 +50,19 @@ public class LibraryRepository {
                 connection.commit();
 
             } catch (SQLException e) {
-
                 connection.rollback();
-
                 if ("23503".equals(e.getSQLState())) {
                     throw new LibraryException("Member not found!");
                 }
-                throw new LibraryException("Database error: " + e.getMessage());
+                throw toLibraryException(e);
             } catch (LibraryException e) {
-
                 connection.rollback();
-
                 throw e;
             } finally {
-
                 connection.setAutoCommit(true);
-
             }
         } catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
+            throw toLibraryException(e);
         }
     }
 
@@ -95,7 +97,7 @@ public class LibraryRepository {
 
             } catch (SQLException e) {
                 connection.rollback();
-                throw new LibraryException("Database error: " + e.getMessage());
+                throw toLibraryException(e);
             } catch (LibraryException e) {
                 connection.rollback();
                 throw e;
@@ -103,7 +105,7 @@ public class LibraryRepository {
                 connection.setAutoCommit(true);
             }
         } catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
+            throw toLibraryException(e);
         }
     }
 }

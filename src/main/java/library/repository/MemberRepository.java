@@ -3,6 +3,8 @@ package library.repository;
 import library.domain.Book;
 import library.domain.Member;
 import library.exceptions.LibraryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.*;
@@ -10,6 +12,7 @@ import java.util.*;
 public class MemberRepository {
     private final Connection connection;
     private static final String SELECT_COLUMNS = "SELECT id, name, email FROM members";
+    private static final Logger log = LoggerFactory.getLogger(MemberRepository.class);
 
     public MemberRepository(Connection connection) {
         this.connection = connection;
@@ -30,7 +33,8 @@ public class MemberRepository {
         if ("23503".equals(e.getSQLState())) {
             return new LibraryException("Cannot delete a member with borrowing history!");
         }
-        return new LibraryException("Database error: " + e.getMessage());
+        log.error("Unexpected database error (SQLState={})", e.getSQLState(), e);
+        return new LibraryException("Database error: " + e.getMessage(), e);
     }
 
     public Member insert(Member member) {

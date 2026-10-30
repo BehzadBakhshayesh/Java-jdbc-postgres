@@ -1,7 +1,9 @@
 package library.repository;
 
-import library.exceptions.LibraryException;
 import library.domain.Book;
+import library.exceptions.LibraryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -11,6 +13,7 @@ import java.util.Optional;
 public class BookRepository {
     private final Connection connection;
     private static final String SELECT_COLUMNS = "SELECT id, title, author, year, is_available FROM books";
+    private static final Logger log = LoggerFactory.getLogger(BookRepository.class);
 
     public BookRepository(Connection connection) {
         this.connection = connection;
@@ -28,7 +31,8 @@ public class BookRepository {
 
 
     private LibraryException toLibraryException(SQLException e) {
-        return new LibraryException("Database error: " + e.getMessage());
+        log.error("Database error (SQLState={})", e.getSQLState(), e);
+        return new LibraryException("Database error: " + e.getMessage(), e);
     }
 
 
