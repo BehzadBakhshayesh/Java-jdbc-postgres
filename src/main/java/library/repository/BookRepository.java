@@ -26,12 +26,11 @@ public class BookRepository {
         );
     }
 
+
     private LibraryException toLibraryException(SQLException e) {
-        if ("23503".equals(e.getSQLState())) {
-            return new LibraryException("Cannot delete a book with borrowing history!");
-        }
         return new LibraryException("Database error: " + e.getMessage());
     }
+
 
     public Book insert(Book book) {
         String sql = "INSERT INTO books (title, author, year, is_available) VALUES (?, ?, ?, ?)";
@@ -63,7 +62,7 @@ public class BookRepository {
             }
 
         } catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
+            throw toLibraryException(e);
         }
     }
 
@@ -80,7 +79,7 @@ public class BookRepository {
             }
 
         } catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
+            throw toLibraryException(e);
         }
 
         return books;
@@ -97,12 +96,12 @@ public class BookRepository {
                 return Optional.empty();
             }
         } catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
+            throw toLibraryException(e);
         }
     }
 
     public List<Book> searchByTitle(String text) {
-        String sql =SELECT_COLUMNS + " WHERE title ILIKE ?";
+        String sql = SELECT_COLUMNS + " WHERE title ILIKE ? ORDER BY id";
         List<Book> result = new ArrayList<>();
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, "%" + text + "%");
@@ -112,30 +111,24 @@ public class BookRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
+            throw toLibraryException(e);
         }
         return result;
     }
 
     public Book update(long id, Book book) {
-        String sql = """
-            UPDATE books
-            SET title = ?, author = ?, year = ?, is_available = ?
-            WHERE id = ?
-            """;
+        String sql = "UPDATE books SET title = ?, author = ?, year = ? WHERE id = ?";
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, book.getTitle());
             pstmt.setString(2, book.getAuthor());
             pstmt.setInt(3, book.getYear());
-            pstmt.setBoolean(4, book.isAvailable());
-            pstmt.setLong(5, id);
+            pstmt.setLong(4, id);
 
             if (pstmt.executeUpdate() == 0) {
                 throw new LibraryException("Book not found with id: " + id);
             }
-            return new Book(id, book.getTitle(), book.getAuthor(), book.getYear(), book.isAvailable());
-        } catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
+            return findById(id).orElseThrow(() -> new LibraryException("Book not found with id: " + id));        } catch (SQLException e) {
+            throw toLibraryException(e);
         }
     }
 
@@ -147,24 +140,14 @@ public class BookRepository {
                 throw new LibraryException("Book not found with id: " + id);
             }
         } catch (SQLException e) {
+            if ("23503".equals(e.getSQLState())) {
+                throw new LibraryException("Cannot delete a book with borrowing history!");
+            }
             throw toLibraryException(e);
         }
     }
 
 
-    public void updateAvailability(long id, boolean available) {
-        String sql = "UPDATE books SET is_available = ? WHERE id = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
-            pstmt.setBoolean(1, available);
-            pstmt.setLong(2, id);
-            if (pstmt.executeUpdate() == 0) {
-                throw new LibraryException("Book not found with id: " + id);
-            }
-        }
-        catch (SQLException e) {
-            throw new LibraryException("Database error: " + e.getMessage());
-        }
-    }
 
 
 }

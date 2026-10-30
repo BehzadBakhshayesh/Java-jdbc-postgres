@@ -10,11 +10,7 @@ import java.sql.SQLException;
 
 public class BookRepositoryTest {
 
-
     public static void main(String[] args) {
-
-
-
 
         DatabaseConnection db = new DatabaseConnection();
         try (Connection connection = db.getConnection(
@@ -34,10 +30,6 @@ public class BookRepositoryTest {
 
             Book updated = repo.update(b1.getId(), new Book("Java", "Behzad", 2020));
             System.out.println("update: " + updated);
-
-            repo.updateAvailability(b1.getId(), false);
-            System.out.println("after availability: " + repo.findById(b1.getId()));
-
             System.out.println("findAll: " + repo.findAll());
 
             repo.delete(b1.getId());

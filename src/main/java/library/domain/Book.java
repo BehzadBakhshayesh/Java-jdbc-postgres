@@ -1,7 +1,6 @@
 package library.domain;
 
 import library.exceptions.LibraryException;
-
 import java.time.Year;
 
 public class Book {
@@ -9,7 +8,7 @@ public class Book {
     private String title;
     private String author;
     private int year;
-    private boolean isAvailable;
+    private final boolean isAvailable;
 
     public Book(String title, String author, int year) {
         this(0, title, author, year, true);
@@ -59,10 +58,6 @@ public class Book {
         return this.isAvailable;
     }
 
-    public void setIsAvailable(boolean isAvailable) {
-        this.isAvailable = isAvailable;
-    }
-
     private static void validateTitle(String title) {
         if (title == null || title.isBlank()) {
             throw new LibraryException("Title can not be blank");
@@ -90,6 +85,17 @@ public class Book {
     @Override
     public String toString() {
         return "ID : " + this.id + " | Title: " + this.title + " | Author: " + this.author + " | Year: " + this.year + " | Status: " + (this.isAvailable ? "Available" : "Borrowed");
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Book other)) return false;
+        return id == other.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.hashCode(id);
     }
 }
 

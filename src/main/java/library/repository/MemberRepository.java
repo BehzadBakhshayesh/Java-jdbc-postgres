@@ -5,9 +5,7 @@ import library.domain.Member;
 import library.exceptions.LibraryException;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class MemberRepository {
     private final Connection connection;
@@ -153,6 +151,33 @@ public class MemberRepository {
                             rs.getBoolean("is_available")
                     ));
                 }
+            }
+        } catch (SQLException e) {
+            throw toLibraryException(e);
+        }
+        return result;
+    }
+    public Map<Long, List<Book>> findBorrowedBooksByMember() {
+        String sql = """
+            SELECT br.member_id, b.id, b.title, b.author, b.year, b.is_available
+            FROM books b
+            JOIN borrowings br ON br.book_id = b.id
+            WHERE br.returned_at IS NULL
+            ORDER BY b.id
+            """;
+        Map<Long, List<Book>> result = new HashMap<>();
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                long memberId = rs.getLong("member_id");
+                Book book = new Book(
+                        rs.getLong("id"),
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getInt("year"),
+                        rs.getBoolean("is_available")
+                );
+                result.computeIfAbsent(memberId, k -> new ArrayList<>()).add(book);
             }
         } catch (SQLException e) {
             throw toLibraryException(e);

@@ -6,14 +6,19 @@ import library.exceptions.LibraryException;
 import library.repository.MemberRepository;
 
 import java.util.List;
+import java.util.Map;
 
 public class MemberServices {
     private final MemberRepository memberRepository;
-    private Member withBorrowedBooks(Member member) {
-        for (Book book : memberRepository.findBorrowedBooks(member.getId())) {
-            member.addBorrowedBooks(book);
+
+    private List<Member> withBorrowedBooks(List<Member> members) {
+        Map<Long, List<Book>> borrowed = memberRepository.findBorrowedBooksByMember();
+        for (Member m : members) {
+            for (Book b : borrowed.getOrDefault(m.getId(), List.of())) {
+                m.addBorrowedBooks(b);
+            }
         }
-        return member;
+        return members;
     }
 
     public MemberServices(MemberRepository memberRepository) {
@@ -25,18 +30,22 @@ public class MemberServices {
     }
 
     public List<Member> allMembers() {
-        return memberRepository.findAll().stream().map(this::withBorrowedBooks).toList();
+        return withBorrowedBooks(memberRepository.findAll());
     }
 
     public List<Member> searchMember(String text) {
-        return memberRepository.search(text).stream().map(this::withBorrowedBooks).toList();
+        return withBorrowedBooks(memberRepository.search(text));
     }
 
     public Member findMemberById(long id) {
         Member member = memberRepository.findById(id)
                 .orElseThrow(() -> new LibraryException("Member not found!"));
-        return withBorrowedBooks(member);
+        for (Book b : memberRepository.findBorrowedBooks(member.getId())) {
+            member.addBorrowedBooks(b);
+        }
+        return member;
     }
+
 
     public Member editMember(long id, String name, String email) {
         Member.validateParams(name, email);
