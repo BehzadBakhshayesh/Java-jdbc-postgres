@@ -22,7 +22,7 @@ public class Main {
             MemberServices memberServices = new MemberServices(new MemberRepository(connection));
             LibraryServices libraryServices = new LibraryServices(new LibraryRepository(connection));
 
-            Menu.runMenu(bookServices, memberServices, libraryServices);
+            new Menu(bookServices, memberServices, libraryServices).run();
 
         } catch (RuntimeException | SQLException e) {
 
