@@ -1,6 +1,5 @@
 package library.domain;
 
-import library.utils.BookData;
 import library.exceptions.LibraryException;
 
 import java.time.Year;

@@ -29,6 +29,9 @@ public class MemberRepository {
         if ("23505".equals(e.getSQLState())) {
             return new LibraryException("Email already exists!");
         }
+        if ("23503".equals(e.getSQLState())) {
+            return new LibraryException("Cannot delete a member with borrowing history!");
+        }
         return new LibraryException("Database error: " + e.getMessage());
     }
 
@@ -114,6 +117,8 @@ public class MemberRepository {
             throw toLibraryException(e);
         }
     }
+
+
 
     public void delete(long id) {
         String sql = "DELETE FROM members WHERE id = ?";

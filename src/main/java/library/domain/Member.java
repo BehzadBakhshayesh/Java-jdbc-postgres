@@ -1,11 +1,9 @@
 package library.domain;
 
 import library.exceptions.LibraryException;
-import library.utils.MemberData;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.util.List;
 
 public class Member {
     private ArrayList<Book> borrowedBooks = new ArrayList<>();
